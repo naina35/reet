@@ -1,5 +1,4 @@
 const dbconnection=require('../db.js')
-
 var express = require('express');
 var router = express.Router({mergeParams:true});
 // /users/:userId/posts 

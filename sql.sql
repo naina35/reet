@@ -7,6 +7,21 @@ create table USERS(
     bio varchar(100) ,
     pfp varchar(255)
 );
+create table refs_user(
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	user_id INT NOT NULL,
+	token varchar(255),
+    created_at datetime,
+    expires_at datetime,
+    revoked boolean,
+    foreign key (user_id) references users(id)
+);
+ALTER TABLE refs_user
+MODIFY COLUMN created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE refs_user
+MODIFY COLUMN revoked boolean NOT NULL DEFAULT true;
+ALTER table users
+add column email  varchar(255);
 insert into users (username,password,bio) 
 	values ("Prabh","akdhfkjasdkfjnsadfsk","Hi there im prabh");
 create table POSTS(
