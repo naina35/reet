@@ -4,7 +4,8 @@ const dbconnection=require('../db.js')
 const {hashToken}=require('../utils/hashToken.js');
 
 async function addRefreshTokenToWhiteList(refreshToken,userId){
-    console.log(refreshToken);
+    
+    //console.log("in whitelist function: ",refreshToken,userId);
     const hashedToken=hashToken(refreshToken);
     const sqlquery="INSERT INTO refs_user (user_id,token,expires_at) values(?,?,?)";
 

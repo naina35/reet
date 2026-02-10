@@ -4,19 +4,15 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-//var crypto = require('crypto');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var users_postsRouter=require('./routes/users_posts');
 var auth_register_router=require('./routes/auth/register');
+var auth_login_router=require('./routes/auth/login');
 var app = express();
 console.log(process.env.JWT_ACCESS_SECRET);
-// function generateRefreshToken() {
-//   const token = crypto.randomBytes(16).toString('base64url');
-//   return token;
-// }
+
 // view engine setup
-//console.log(generateRefreshToken());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -30,6 +26,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/users/:userId/posts', users_postsRouter);
 app.use('/',auth_register_router);
+app.use('/',auth_login_router);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
