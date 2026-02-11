@@ -9,6 +9,7 @@ var usersRouter = require('./routes/users');
 var users_postsRouter=require('./routes/users_posts');
 var auth_register_router=require('./routes/auth/register');
 var auth_login_router=require('./routes/auth/login');
+var ref_token_router=require('./routes/auth/refreshtoken');
 var app = express();
 console.log(process.env.JWT_ACCESS_SECRET);
 
@@ -27,6 +28,7 @@ app.use('/users', usersRouter);
 app.use('/users/:userId/posts', users_postsRouter);
 app.use('/',auth_register_router);
 app.use('/',auth_login_router);
+app.use('/',ref_token_router);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

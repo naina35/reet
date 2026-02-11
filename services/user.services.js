@@ -12,6 +12,7 @@ async function findUserbyuname(username){
 async function findUserbyId(id){
     const sqlquery="SELECT * from users where id=?";
     const [rows]=await dbconnection.execute(sqlquery,[id]);
+    console.log(rows);
     if(rows.length===0)return null;
     else return rows[0]; 
 }

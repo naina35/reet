@@ -18,7 +18,8 @@ async function findRefreshToken(token){
     const hashedToken=hashToken(token);
     const sqlquery="SELECT * from Refs_user where token=?";
     const [rows]=await dbconnection.execute(sqlquery,[hashedToken]);
-    return rows;
+    console.log(rows,rows[0]);
+    return rows[0];
 }
 async function deleteRefreshTokenById(id){
     const sqlquery="UPDATE Refs_user SET revoked =true where id=?";
