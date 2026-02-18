@@ -29,7 +29,7 @@ router.post('/auth/login',async (req,res,next)=>{
                 res.status(403).json({error:"wrong password"});
             }
             else {
-                    const { accessToken, refreshToken } = generateTokens({userId:existingUser.id,username:username});
+                    const { accessToken, refreshToken } = generateTokens({id:existingUser.id,username:username});
                     await addRefreshTokenToWhiteList(refreshToken, existingUser.id );
 
                     res.json({

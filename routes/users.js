@@ -1,57 +1,57 @@
 //const { use } = require('react');
 const dbconnection=require('../db.js')
-
+const {isAuthenticated}=require('../middleware.js');
 var express = require('express');
 var router = express.Router();
 
-router.post('/',(req,res,next)=>{
+router.post('/',async(req,res,next)=>{
   const {username,password,bio,pfp}=req.body;
   console.log(req.body);
   if(!username||!password){
     return res.status(400).json({ error: 'no username / password' });
   }
   const query='INSERT INTO USERS (username,password,bio,pfp) values(?,?,?,?)';  
-  dbconnection.query(query,[username,password,bio,pfp],(err,rows,fields)=>{
-    if(err) {
+  try{
+  const [rows]=await dbconnection.query(query,[username,password,bio,pfp]);
+    res.status(201).json({ userId: rows.insertId})}
+    catch(err) {
       res.status(400).json({error:err.details})
     }
-    else res.status(201).json({ userId: rows.insertId})
-  })
   
 });
-router.get('/:userId',(req,res)=>{
-    const userId=parseInt(req.params.userId);
+router.get('/profile',isAuthenticated,async(req,res)=>{
+    const userId=req.payload.id;
     if(isNaN(userId)){
       return res.status(400).json({ error: 'wrong userId'});
     }
-    dbconnection.query('SELECT * from users where Id=?',userId,(err,rows,fields)=>{
-      if(err) {
+    try{
+    const [rows]=await dbconnection.query('SELECT username,bio,pfp from users where Id=?',userId);
+    if(rows.length===0)res.status(500).json({ error: 'no userId exists', details: err });
+      res.json(rows);}
+      catch(err) {
         return res.status(500).json({ error: 'Database error', details: err });
       }
-      if(rows.length===0)res.status(500).json({ error: 'no userId exists', details: err });
-      res.json(rows);
+      
     });
-});
 
 
-router.delete('/:userId',(req,res,next)=>{
-    const userId=parseInt(req.params.userId);
+router.delete('/profile',isAuthenticated,async(req,res,next)=>{
+    const userId=req.payload.id;
     if(isNaN(userId)){
         return res.status(500).json({error:"userId are wrong"});
     }
     const sqlquery="DELETE from users where id=?";
-    dbconnection.query(sqlquery,userId,(err,rows,fields)=>{
-        if(err){
+    try{
+    const [rows]=await dbconnection.query(sqlquery,userId)
+    return res.json(rows);}
+        catch(err){
             return res.status(500).json({error:"database error",details:err});
         }
-        else {
-            return res.json(rows);
-        }
-    });
-})
+        
+  });
 
-router.patch('/:userId',(req,res,next)=>{
-  const userId=parseInt(req.params.userId);
+router.patch('/profile',isAuthenticated,async(req,res,next)=>{
+  const userId=req.payload.id;
   if(isNaN(userId)){
     return res.status(500).json({error:"wrong user Id"});
   }
@@ -63,39 +63,34 @@ router.patch('/:userId',(req,res,next)=>{
   if(req.body.pfp===undefined){
     const new_bio=req.body.bio;
     const sql_query="ALTER USERS SET bio=? where id=?";
-    dbconnection.query(sql_query,[new_bio,userId],(err,rows,fields)=>{
-      if(err){
+    try{
+    const [rows]=dbconnection.query(sql_query,[new_bio,userId])
+    return res.json(rows);}
+      catch(err){
         return res.status(500).json({err:"database error",details:err});
       }
-      else {
-        return res.json(rows);
-      }
-    })
-  }
+      
+    }
   else if(req.body.bio===undefined){
     const new_pfp=req.body.pfp;
     const sql_query="ALTER USERS SET pfp=? where id=?";
-    dbconnection.query(sql_query,[new_pfp,userId],(err,rows,fields)=>{
-      if(err){
+    try{
+    const [rows]=await dbconnection.query(sql_query,[new_pfp,userId])
+    return res.json(rows);}
+      catch(err){
         return res.status(500).json({err:"database error",details:err});
       }
-      else {
-        return res.json(rows);
-      }
-    })
   }
   else {
     const new_pfp=req.body.pfp;
     const new_bio=req.body.bio;
     const sql_query="ALTER USERS SET pfp=?,bio=? where id=?";
-    dbconnection.query(sql_query,[new_pfp,new_bio,userId],(err,rows,fields)=>{
-      if(err){
+    try{
+    const [rows]=await dbconnection.query(sql_query,[new_pfp,new_bio,userId]);
+    return res.json(rows);
+      }
+      catch(err){
         return res.status(500).json({err:"database error",details:err});
       }
-      else {
-        return res.json(rows);
-      }
-    })
-  }
-});
+}});
 module.exports = router;

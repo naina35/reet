@@ -11,7 +11,6 @@ var auth_register_router=require('./routes/auth/register');
 var auth_login_router=require('./routes/auth/login');
 var ref_token_router=require('./routes/auth/refreshtoken');
 var app = express();
-console.log(process.env.JWT_ACCESS_SECRET);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/users/:userId/posts', users_postsRouter);
+app.use('/users/posts', users_postsRouter);
 app.use('/',auth_register_router);
 app.use('/',auth_login_router);
 app.use('/',ref_token_router);
