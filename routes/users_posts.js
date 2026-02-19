@@ -9,7 +9,7 @@ router.get('/',isAuthenticated,async(req,res)=>{
       return res.status(400).json({ error: 'wrong userId'});
     }
     else {
-        const query='SELECT * from POSTS where user_Id=?'
+        const query='SELECT * from POSTS where user_id=?'
         try{
             const [rows]=await dbconnection.query(query,userId,(err,rows,fields)=>{
             res.json(rows);
@@ -53,7 +53,7 @@ router.get('/:postId',isAuthenticated,async(req,res)=>{
     }
     else{ 
         try{
-            const sqlquery="SELECT * from posts where id=? and user_Id=?";
+            const sqlquery="SELECT * from posts where id=? and user_id=?";
             const [rows]=await dbconnection.query(sqlquery,[postId,userId])
             if(rows.length===0){
             return res.status(500).json({error:"No such row exists"});
