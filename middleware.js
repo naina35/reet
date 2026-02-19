@@ -4,22 +4,23 @@ function isAuthenticated(req,res,next){
     const {authorization}=req.headers;
     console.log(req.headers);
     if(!authorization){
-        res.status(401).json({
+        return res.status(401).json({
             error:"unauthorized"
         })
     }
-    else { try{
-        const token=authorization.split(' ')[1];
-        const payload=jwt.verify(token,process.env.JWT_ACCESS_SECRET);
-        console.log(payload);
-        req.payload=payload;}
+    else { 
+        try{
+            const token=authorization.split(' ')[1];
+            const payload=jwt.verify(token,process.env.JWT_ACCESS_SECRET);
+            console.log(payload);
+            req.payload=payload;
+        }
         catch (err){
             if(err.name==='TokenExpiredError'){
-            res.status(401).json({error:err.name});}
+            return res.status(401).json({error:err.name});}
             else {
-                res.status(401).json({error:"Unauthorized"});
+                return res.status(401).json({error:"Unauthorized"});
             }
-
         }
         return next();
     }
