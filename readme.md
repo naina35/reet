@@ -1,9 +1,11 @@
+Express.js, MySQL, node, authentication using jwts , complete secure backend for a social media app
+
 APIS:
-login
-feed 
-post of id
-
-
+auth-
+   login
+   register
+profile
+patch
 implement database connection and perform CRUD
 =>id page - posts+ pfp + username
  get request 
@@ -16,8 +18,6 @@ output- posts of people you're following
 => new post 
 post request
 
-USERS
-POST   /users                → create user DONE
 USERS/:USERID
 GET    /users/:userId        → username, pfp, bio  DONE
 PUT    /users/:userId        → update bio / pfp
