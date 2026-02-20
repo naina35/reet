@@ -12,7 +12,7 @@ router.get('/',isAuthenticated,async(req,res)=>{
         const query='SELECT * from POSTS where user_id=?'
         try{
             const [rows]=await dbconnection.query(query,userId,(err,rows,fields)=>{
-            res.json(rows);
+            return res.json(rows);
         })}
         catch(err) {
                 return res.status(500).json({ error: 'Database error', details: err });
