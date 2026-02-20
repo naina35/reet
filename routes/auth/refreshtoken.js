@@ -15,7 +15,7 @@ const {
 }= require('../../services/auth.services.js');
 router.post('/refreshToken',async (req,res,next)=>{
     const {refreshToken}=req.body;
-    console.log(req.body);
+    //console.log(req.body);
     if(!refreshToken){
         res.status(400).json({error:"Missing ref token"});
     }

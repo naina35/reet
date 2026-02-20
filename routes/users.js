@@ -6,7 +6,7 @@ var router = express.Router();
 
 router.post('/',async(req,res,next)=>{
   const {username,password,bio,pfp}=req.body;
-  console.log(req.body);
+  //console.log(req.body);
   if(!username||!password){
     return res.status(400).json({ error: 'no username / password' });
   }

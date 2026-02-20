@@ -28,10 +28,10 @@ caption text ,
 FOREIGN KEY (user_id) REFERENCES USERS(id)
  */
 router.post('/',isAuthenticated,async(req,res)=>{
-    console.log("users_posts.js post request")
+    //console.log("users_posts.js post request")
     const {pic,caption}=req.body;
     const userId=req.payload.id;
-    console.log(pic,caption,userId);
+    //console.log(pic,caption,userId);
     if(isNaN(userId)) return res.status(400).json({error:"wrong user Id"});
     else {
         try {
@@ -40,7 +40,7 @@ router.post('/',isAuthenticated,async(req,res)=>{
 
     return res.json(rows);
   } catch (err) {
-    console.log(err);
+    //console.log(err);
     return res.status(500).json({ error: "Database error", details: err });
   }
     }
