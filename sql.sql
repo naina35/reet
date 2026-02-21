@@ -38,6 +38,16 @@ create table rels(
     foreign key (USER1) references USERS(id) ,
     foreign key (USER2) references USERS(id)
 );
+drop table rels ;
+create table rels(
+    id int primary key,
+    user1 int NOT NULL ,
+    user2 int NOT NULL ,
+    type enum('follow','pending') ,
+    foreign key (USER1) references USERS(id) ,
+    foreign key (USER2) references USERS(id),
+    constraint unique_cons unique(user1,user2)
+);
 
 drop database heer;
 ALTER TABLE posts

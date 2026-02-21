@@ -10,6 +10,8 @@ var users_postsRouter=require('./routes/users_posts');
 var auth_register_router=require('./routes/auth/register');
 var auth_login_router=require('./routes/auth/login');
 var ref_token_router=require('./routes/auth/refreshtoken');
+var rels_router = require('./routes/rels');
+
 var app = express();
 
 // view engine setup
@@ -21,7 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use('/rels', rels_router);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/users/posts', users_postsRouter);
