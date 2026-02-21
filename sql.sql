@@ -32,17 +32,17 @@ create table POSTS(
     FOREIGN KEY (user_id) REFERENCES USERS(id)
 );
 create table rels(
-	user1 int PRIMARY KEY ,
+	id int primary key,
+	user1 int NOT NULL ,
     user2 int NOT NULL ,
-    type enum('follow','block') ,
+    type enum('follow','pending') ,
     foreign key (USER1) references USERS(id) ,
-    foreign key (USER2) references USERS(id)
+    foreign key (USER2) references USERS(id),
+    constraint unique_cons unique(user1,user2)
 );
-
-drop database heer;
 ALTER TABLE posts
 DROP FOREIGN KEY user_id;
-
+DROP TABLE RELS;
 ALTER TABLE posts 
   ADD CONSTRAINT user_id_cascade 
   FOREIGN KEY (user_id) 
