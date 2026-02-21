@@ -29,4 +29,38 @@ GET    /users/:userId/posts/:postId        → get one post  DONEs
 
 
 
-
+Folder structure:
+reet
+├── public
+│  ├── images
+│  ├── javascripts
+│  └── stylesheets
+│     └── style.css
+├── routes
+│  ├── auth
+│  │  ├── login.js
+│  │  ├── refreshtoken.js
+│  │  └── register.js
+│  ├── index.js
+│  ├── rels.js
+│  ├── users.js
+│  └── users_posts.js
+├── services
+│  ├── auth.services.js
+│  └── user.services.js
+├── utils
+│  ├── hashToken.js
+│  └── jwt.js
+├── views
+│  ├── error.jade
+│  ├── index.jade
+│  └── layout.jade
+├── .env
+├── .gitignore
+├── app.js
+├── db.js
+├── middleware.js
+├── package-lock.json
+├── package.json
+├── readme.md
+└── sql.sql
