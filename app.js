@@ -11,12 +11,13 @@ var auth_register_router=require('./routes/auth/register');
 var auth_login_router=require('./routes/auth/login');
 var ref_token_router=require('./routes/auth/refreshtoken');
 var rels_router = require('./routes/rels');
-
+var cors=require('cors');
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+app.use(cors())
 
 app.use(logger('dev'));
 app.use(express.json());
