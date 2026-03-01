@@ -14,7 +14,7 @@ var router=express.Router();
 
 /**
  * make a new follow request:
- * post: /users/me/rels/
+ * post: /USERS/me/rels/
  * get list of people u follow
  */
 /*
@@ -33,7 +33,7 @@ router.get('/followers', isAuthenticated, async (req, res) => {
         const query = `
             SELECT u.id, u.username, u.bio, u.pfp
             FROM rels r
-            JOIN users u ON u.id = r.user1
+            JOIN USERS u ON u.id = r.user1
             WHERE r.user2 = ? AND r.type = 'follow'
         `;
         const [rows] = await dbconnection.query(query, [userId]);
@@ -50,7 +50,7 @@ router.get('/following', isAuthenticated, async (req, res) => {
         const query = `
             SELECT u.id, u.username, u.bio, u.pfp
             FROM rels r
-            JOIN users u ON u.id = r.user2
+            JOIN USERS u ON u.id = r.user2
             WHERE r.user1 = ? AND r.type = 'follow'
         `;
         const [rows] = await dbconnection.query(query, [userId]);
@@ -67,7 +67,7 @@ router.get('/pending/sent', isAuthenticated, async (req, res) => {
         const query = `
             SELECT u.id, u.username, u.bio, u.pfp
             FROM rels r
-            JOIN users u ON u.id = r.user2
+            JOIN USERS u ON u.id = r.user2
             WHERE r.user1 = ? AND r.type = 'pending'
         `;
         const [rows] = await dbconnection.query(query, [userId]);
@@ -84,7 +84,7 @@ router.get('/pending/received', isAuthenticated, async (req, res) => {
         const query = `
             SELECT u.id, u.username, u.bio, u.pfp
             FROM rels r
-            JOIN users u ON u.id = r.user1
+            JOIN USERS u ON u.id = r.user1
             WHERE r.user2 = ? AND r.type = 'pending'
         `;
         const [rows] = await dbconnection.query(query, [userId]);
@@ -97,18 +97,23 @@ router.get('/pending/received', isAuthenticated, async (req, res) => {
 // POST /rels/:targetId       — send a follow request to targetId (creates 'pending')
 router.post('/:targetId', isAuthenticated, async (req, res) => {
     const userId = req.payload.id;
+    console.log(req.payload)
     const targetId = parseInt(req.params.targetId);
 
-    if (isNaN(targetId)) return res.status(400).json({ error: 'Invalid target user id' });
-    if (userId === targetId) return res.status(400).json({ error: 'You cannot follow yourself' });
-
+    if (isNaN(targetId)||isNaN(userId)){
+        console.log("error: Invalid target user id")
+    return res.status(400).json({ error: 'Invalid target user id' });}
+    if (userId === targetId) {
+        console.log("u cant follow urself")
+        return res.status(400).json({ error: 'You cannot follow yourself' });
+    }
     try {
         // check if a rel already exists in either direction
         const checkQuery = `
             SELECT * FROM rels
-            WHERE (user1 = ? AND user2 = ?) OR (user1 = ? AND user2 = ?)
+            WHERE user1 = ? AND user2 = ?
         `;
-        const [existing] = await dbconnection.query(checkQuery, [userId, targetId, targetId, userId]);
+        const [existing] = await dbconnection.query(checkQuery, [userId, targetId]);
         if (existing.length > 0) {
             return res.status(400).json({ error: 'Relationship already exists' });
         }
@@ -117,6 +122,7 @@ router.post('/:targetId', isAuthenticated, async (req, res) => {
         const [result] = await dbconnection.query(query, [userId, targetId, 'pending']);
         return res.json({ message: 'Follow request sent', id: result.insertId });
     } catch (err) {
+        console.log(err);
         return res.status(500).json({ error: 'Database error', details: err });
     }
 });
