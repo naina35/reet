@@ -27,7 +27,7 @@ router.get('/profile',isAuthenticated,async(req,res)=>{
     try{
     const [rows]=await dbconnection.query('SELECT username,bio,pfp from USERS where Id=?',userId);
     if(rows.length===0)res.status(500).json({ error: 'no userId exists', details: err });
-      res.json(rows);}
+      return res.json(rows);}
       catch(err) {
         return res.status(500).json({ error: 'Database error', details: err });
       }
