@@ -63,9 +63,12 @@ router.patch('/profile',isAuthenticated,async(req,res,next)=>{
   if(req.body.pfp===undefined){
     const new_bio=req.body.bio;
     const sql_query="ALTER USERS SET bio=? where id=?";
+    const sql_query2="SELECT username,bio,pfp from USERS where id=?"
     try{
     const [rows]=dbconnection.query(sql_query,[new_bio,userId])
-    return res.json(rows);}
+    const [rows2]=dbconnection.query(sql_query2,userId)
+    return res.json(rows2);
+  }
       catch(err){
         return res.status(500).json({err:"database error",details:err});
       }
@@ -74,9 +77,12 @@ router.patch('/profile',isAuthenticated,async(req,res,next)=>{
   else if(req.body.bio===undefined){
     const new_pfp=req.body.pfp;
     const sql_query="ALTER USERS SET pfp=? where id=?";
+    const sql_query2="SELECT username,bio,pfp from USERS where id=?"
     try{
     const [rows]=await dbconnection.query(sql_query,[new_pfp,userId])
-    return res.json(rows);}
+    const [rows2]=dbconnection.query(sql_query2,userId)
+    return res.json(rows2);
+    }
       catch(err){
         return res.status(500).json({err:"database error",details:err});
       }
@@ -85,9 +91,11 @@ router.patch('/profile',isAuthenticated,async(req,res,next)=>{
     const new_pfp=req.body.pfp;
     const new_bio=req.body.bio;
     const sql_query="ALTER USERS SET pfp=?,bio=? where id=?";
+    const sql_query2="SELECT username,bio,pfp from USERS where id=?"
     try{
     const [rows]=await dbconnection.query(sql_query,[new_pfp,new_bio,userId]);
-    return res.json(rows);
+    const [rows2]=dbconnection.query(sql_query2,userId)
+    return res.json(rows2);
       }
       catch(err){
         return res.status(500).json({err:"database error",details:err});
