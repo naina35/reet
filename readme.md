@@ -168,8 +168,8 @@ REFRESH_SECRET=your_refresh_secret
 Clone the repository:
 
 ```
-git clone https://github.com/yourusername/project-name.git
-cd project-name
+git clone https://github.com/naina35/reet.git
+cd reet
 ```
 
 Install dependencies:
