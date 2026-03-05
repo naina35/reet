@@ -31,6 +31,46 @@ GET    /users/:userId/posts/:postId        → get one post  DONEs
 
 Folder structure:
 reet
+    client
+    ├── dist
+    │  ├── assets
+    │  │  ├── index-DJ2y1AdQ.js
+    │  │  └── index-DQ3P1g1z.css
+    │  ├── index.html
+    │  └── vite.svg
+    ├── public
+    │  └── vite.svg
+    ├── src
+    │  ├── assets
+    │  ├── components
+    │  │  └── ProtectedRoute.tsx
+    │  ├── hooks
+    │  │  └── useAppDispatch.ts
+    │  ├── pages
+    │  │  ├── Home.tsx
+    │  │  ├── Login.tsx
+    │  │  ├── Profile.tsx
+    │  │  └── Register.tsx
+    │  ├── redux
+    │  │  ├── auth
+    │  │  │  └── authSlice.ts
+    │  │  └── store.ts
+    │  ├── services
+    │  │  └── api.ts
+    │  ├── App.css
+    │  ├── App.tsx
+    │  ├── index.css
+    │  └── main.tsx
+    ├── .gitignore
+    ├── eslint.config.js
+    ├── index.html
+    ├── package-lock.json
+    ├── package.json
+    ├── README.md
+    ├── tsconfig.app.json
+    ├── tsconfig.json
+    ├── tsconfig.node.json
+    └── vite.config.tss
 ├── public
 │  ├── images
 │  ├── javascripts
