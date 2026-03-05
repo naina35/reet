@@ -27,7 +27,7 @@ router.get('/profile',isAuthenticated,async(req,res)=>{
     try{
     const [rows]=await dbconnection.query('SELECT username,bio,pfp from USERS where Id=?',userId);
     if(rows.length===0)res.status(500).json({ error: 'no userId exists', details: err });
-      return res.json(rows);}
+      return res.json(rows[0]);}
       catch(err) {
         return res.status(500).json({ error: 'Database error', details: err });
       }
@@ -57,17 +57,17 @@ router.patch('/profile',isAuthenticated,async(req,res,next)=>{
   }
   // allowed fields are bio and pfp and also password
   if(req.body.pfp===undefined&&req.body.bio===undefined){
-    return res.status(500).err("Nothing to update");
+    return res.status(500).json({error:"Nothing to update"});
   }
   
   if(req.body.pfp===undefined){
     const new_bio=req.body.bio;
-    const sql_query="ALTER USERS SET bio=? where id=?";
+    const sql_query="UPDATE USERS SET bio=? where id=?";
     const sql_query2="SELECT username,bio,pfp from USERS where id=?"
     try{
-    const [rows]=dbconnection.query(sql_query,[new_bio,userId])
-    const [rows2]=dbconnection.query(sql_query2,userId)
-    return res.json(rows2);
+    const [rows]=await dbconnection.query(sql_query,[new_bio,userId])
+    const [rows2]=await dbconnection.query(sql_query2,userId)
+    return res.json(rows2[0]);
   }
       catch(err){
         return res.status(500).json({err:"database error",details:err});
@@ -76,12 +76,12 @@ router.patch('/profile',isAuthenticated,async(req,res,next)=>{
     }
   else if(req.body.bio===undefined){
     const new_pfp=req.body.pfp;
-    const sql_query="ALTER USERS SET pfp=? where id=?";
+    const sql_query="UPDATE USERS SET pfp=? where id=?";
     const sql_query2="SELECT username,bio,pfp from USERS where id=?"
     try{
     const [rows]=await dbconnection.query(sql_query,[new_pfp,userId])
-    const [rows2]=dbconnection.query(sql_query2,userId)
-    return res.json(rows2);
+    const [rows2]=await dbconnection.query(sql_query2,userId)
+    return res.json(rows2[0]);
     }
       catch(err){
         return res.status(500).json({err:"database error",details:err});
@@ -90,12 +90,12 @@ router.patch('/profile',isAuthenticated,async(req,res,next)=>{
   else {
     const new_pfp=req.body.pfp;
     const new_bio=req.body.bio;
-    const sql_query="ALTER USERS SET pfp=?,bio=? where id=?";
+    const sql_query="UPDATE USERS SET pfp=?,bio=? where id=?";
     const sql_query2="SELECT username,bio,pfp from USERS where id=?"
     try{
     const [rows]=await dbconnection.query(sql_query,[new_pfp,new_bio,userId]);
-    const [rows2]=dbconnection.query(sql_query2,userId)
-    return res.json(rows2);
+    const [rows2]=await dbconnection.query(sql_query2,userId)
+    return res.json(rows2[0]);
       }
       catch(err){
         return res.status(500).json({err:"database error",details:err});
