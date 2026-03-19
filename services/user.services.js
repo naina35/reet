@@ -4,13 +4,13 @@ const dbconnection=require('../db.js')
 
 
 async function findUserbyuname(username){
-    const sqlquery="SELECT * from USERS where username=?";
+    const sqlquery="SELECT id,username,bio,pfp,email from USERS where username=?";
     const [rows]=await dbconnection.execute(sqlquery,[username]);
     if(rows.length===0)return null;
     else return rows[0]; 
 }
 async function findUserbyId(id){
-    const sqlquery="SELECT * from USERS where id=?";
+    const sqlquery="SELECT id,username,bio,pfp,email from USERS where id=?";
     const [rows]=await dbconnection.execute(sqlquery,[id]);
    // console.log(rows);
     if(rows.length===0)return null;
