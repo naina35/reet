@@ -11,8 +11,12 @@ const connection = mysql.createPool({
     rejectUnauthorized: false
   }
 })
+
 // connection.connect((err=>{
 //   if(err)throw err;
 //   console.log("mysql connected")
 // }));
 module.exports=connection;
+
+
+

@@ -17,18 +17,18 @@ async function addRefreshTokenToWhiteList(refreshToken,userId){
 async function findRefreshToken(token){
     const hashedToken=hashToken(token);
     const sqlquery="SELECT * from refs_user where token=?";
-    const [rows]=await dbconnection.execute(sqlquery,[hashedToken]);
+    const [rows]=await dbconnection.query(sqlquery,[hashedToken]);
     //console.log(rows,rows[0]);
     return rows[0];
 }
 async function deleteRefreshTokenById(id){
     const sqlquery="UPDATE refs_user SET revoked =true where id=?";
-    const [result]=await dbconnection.execute(sqlquery,[id]);
+    const [result]=await dbconnection.query(sqlquery,[id]);
     return result;
 }
 async function revokeTokens(userId){
     const sqlquery="UPDATE refs_user SET revoked =true where user_id=?";
-    const [result]=await dbconnection.execute(sqlquery,[userId]);
+    const [result]=await dbconnection.query(sqlquery,[userId]);
     return result;
 }
 module.exports={

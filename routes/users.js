@@ -1,9 +1,11 @@
 //const { use } = require('react');
+const multer = require('multer')
+const upload = multer({ storage: multer.memoryStorage() })
 const dbconnection=require('../db.js')
 const {isAuthenticated}=require('../middleware.js');
 var express = require('express');
 var router = express.Router();
-
+const supabase=require('../supabase.js')
 router.post('/',async(req,res,next)=>{
   const {username,password,bio,pfp}=req.body;
   //console.log(req.body);
@@ -33,8 +35,6 @@ router.get('/profile',isAuthenticated,async(req,res)=>{
       }
       
     });
-
-
 router.delete('/profile',isAuthenticated,async(req,res,next)=>{
     const userId=req.payload.id;
     if(isNaN(userId)){
@@ -50,17 +50,19 @@ router.delete('/profile',isAuthenticated,async(req,res,next)=>{
         
   });
 
-router.patch('/profile',isAuthenticated,async(req,res,next)=>{
+router.patch('/profile', isAuthenticated, upload.single('pfp'), async (req, res, next) => {
   const userId=req.payload.id;
   if(isNaN(userId)){
     return res.status(500).json({error:"wrong user Id"});
   }
   // allowed fields are bio and pfp and also password
-  if(req.body.pfp===undefined&&req.body.bio===undefined){
+  console.log(req.body)
+  console.log(req.file)
+  if(req.file===undefined&&req.body.bio===undefined){
     return res.status(500).json({error:"Nothing to update"});
   }
   
-  if(req.body.pfp===undefined){
+  if(req.file===undefined){
     const new_bio=req.body.bio;
     const sql_query="UPDATE USERS SET bio=? where id=?";
     const sql_query2="SELECT username,bio,pfp from USERS where id=?"
@@ -75,11 +77,22 @@ router.patch('/profile',isAuthenticated,async(req,res,next)=>{
       
     }
   else if(req.body.bio===undefined){
-    const new_pfp=req.body.pfp;
+    const new_pfp=req.file;
+    const fileName = `pfp_${userId}.png`; // unique per user
+    const { data, error } = await supabase.storage.from('pfp_bucker')
+  .upload(fileName, req.file.buffer, {
+    contentType: req.file.mimetype,
+    upsert: true, // overwrite if already exists
+  });
+
+if (error) {
+  return res.status(500).json({ error: 'Failed to upload image', details: error });
+}
+const filePath = `profile_pics/${fileName}`;
     const sql_query="UPDATE USERS SET pfp=? where id=?";
     const sql_query2="SELECT username,bio,pfp from USERS where id=?"
     try{
-    const [rows]=await dbconnection.query(sql_query,[new_pfp,userId])
+    const [rows]=await dbconnection.query(sql_query,[filePath,userId])
     const [rows2]=await dbconnection.query(sql_query2,userId)
     return res.json(rows2[0]);
     }
