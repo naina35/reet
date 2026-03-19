@@ -11,9 +11,9 @@ router.get('/',isAuthenticated,async(req,res)=>{
     else {
         const query='SELECT * from POSTS where user_id=?'
         try{
-            const [rows]=await dbconnection.query(query,userId,(err,rows,fields)=>{
+            const [rows]=await dbconnection.query(query,userId)
             return res.json(rows);
-        })}
+        }
         catch(err) {
                 return res.status(500).json({ error: 'Database error', details: err });
             }
