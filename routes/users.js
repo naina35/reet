@@ -21,20 +21,45 @@ router.post('/',async(req,res,next)=>{
     }
   
 });
-router.get('/profile',isAuthenticated,async(req,res)=>{
-    const userId=req.payload.id;
-    if(isNaN(userId)){
-      return res.status(400).json({ error: 'wrong userId'});
+router.get('/profile', isAuthenticated, async (req, res) => {
+  const userId = req.payload.id;
+  if (isNaN(userId)) {
+    return res.status(400).json({ error: 'wrong userId' });
+  }
+
+  try {
+    const [rows] = await dbconnection.query(
+      'SELECT username, bio, pfp FROM USERS WHERE id=?',
+      [userId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'No user found with this ID' });
     }
-    try{
-    const [rows]=await dbconnection.query('SELECT username,bio,pfp from USERS where Id=?',userId);
-    if(rows.length===0)res.status(500).json({ error: 'no userId exists', details: err });
-      return res.json(rows[0]);}
-      catch(err) {
-        return res.status(500).json({ error: 'Database error', details: err });
+
+    const user = rows[0];
+
+    // if user has a pfp stored, generate signed URL
+    if (user.pfp) {
+      console.log("user has pfp")
+      const { data: signedURL, error } = await supabase.storage
+        .from('pfp_bucker')      // your bucket name
+        .createSignedUrl(user.pfp, 3600); // URL valid for 60 seconds
+
+      if (error) {
+        console.log('Error generating signed URL:', error);
+        user.pfp = null; // fallback if error
+      } else {
+        console.log(signedURL)
+        user.pfp = signedURL.signedUrl;
       }
-      
-    });
+    }
+    console.log(user)
+    return res.json(user);
+  } catch (err) {
+    return res.status(500).json({ error: 'Database error', details: err });
+  }
+});
 router.delete('/profile',isAuthenticated,async(req,res,next)=>{
     const userId=req.payload.id;
     if(isNaN(userId)){
@@ -88,7 +113,7 @@ router.patch('/profile', isAuthenticated, upload.single('pfp'), async (req, res,
 if (error) {
   return res.status(500).json({ error: 'Failed to upload image', details: error });
 }
-const filePath = `profile_pics/${fileName}`;
+const filePath =fileName;
     const sql_query="UPDATE USERS SET pfp=? where id=?";
     const sql_query2="SELECT username,bio,pfp from USERS where id=?"
     try{
