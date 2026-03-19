@@ -31,13 +31,11 @@ router.get('/rel/:username', isAuthenticated, async (req, res) => {
   const cursor = req.query.cursor ? parseInt(req.query.cursor) : null;
   console.log(cursor)
   try {
-    // 1️⃣ Use helper to get requested user
     const requestedUser = await findUserbyuname(requestedUsername);
     console.log("requestedUser:", requestedUser);
 
     if (!requestedUser) return res.status(404).json({ error: 'User not found' });
 
-    // 2️⃣ Check if current user follows requested user
     const [relRows] = await dbconnection.execute(
       "SELECT 1 FROM rels WHERE user1=? AND user2=? AND type='follow'",
       [currentUserId, requestedUser.id]
@@ -48,7 +46,6 @@ router.get('/rel/:username', isAuthenticated, async (req, res) => {
       return res.status(403).json({ error: 'You are not following this user' });
     }
 
-    // 3️⃣ Fetch posts with pagination
     let query = 'SELECT id, pic, caption FROM POSTS WHERE user_id=?';
     const params = [requestedUser.id];
     if (cursor) {
@@ -61,7 +58,6 @@ router.get('/rel/:username', isAuthenticated, async (req, res) => {
     const [posts] = await dbconnection.query(query,params);
     console.log("posts fetched:", posts.length);
 
-    // 4️⃣ Generate signed URLs
     for (let post of posts) {
       if (post.pic) {
         const { data, error } = await supabase.storage
@@ -73,7 +69,6 @@ router.get('/rel/:username', isAuthenticated, async (req, res) => {
       }
     }
 
-    // 5️⃣ Determine next cursor
     const nextCursor = posts.length > 0 ? posts[posts.length - 1].id : null;
 
     return res.json({
