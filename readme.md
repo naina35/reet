@@ -1,6 +1,7 @@
-# Minimal Social Media Backend (Express + MySQL)
-
-A secure backend API for a minimal social media application built using **Node.js, Express.js, and MySQL**.
+# Stills Backend
+A private, curated collection of moments and thoughts visible only to people you allow.
+Secure APIs for STIlLS
+Built using **Node.js, Express.js, and MySQL**.
 The project implements authentication, user profiles, posts, and relationship management (follow, block, remove connection).
 
 This backend focuses on **clean architecture, modular routing, and secure authentication using JWT tokens**.
@@ -24,6 +25,7 @@ This backend focuses on **clean architecture, modular routing, and secure authen
 * Secure password hashing
 * JWT access token generation
 * Refresh token support
+* follow your friends
 
 ### User Profiles
 
@@ -128,7 +130,7 @@ MySQL database storing:
 * users
 * posts
 * relationships
-
+* posts
 ---
 
 # Database Setup
@@ -205,11 +207,11 @@ npm run dev
 # Future Improvements
 
 * Feed API (timeline generation)
-* Pagination for posts
+* Pagination for posts  - DONE 
 * Input validation middleware
-* Image upload support
+* Image upload support - DONE
 * Notifications system
-* WebSocket based real-time updates
+* WebSocket based real-time updates 
 
 ---
 
