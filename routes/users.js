@@ -6,6 +6,7 @@ const {isAuthenticated}=require('../middleware.js');
 var express = require('express');
 var router = express.Router();
 const supabase=require('../supabase.js')
+const {findUserbyuname}=require('../services/user.services.js')
 router.post('/',async(req,res,next)=>{
   const {username,password,bio,pfp}=req.body;
   //console.log(req.body);
@@ -20,6 +21,76 @@ router.post('/',async(req,res,next)=>{
       res.status(400).json({error:err.details})
     }
   
+});
+router.get('/rel/:username', isAuthenticated, async (req, res) => {
+  console.log("user profile page api");
+
+  const currentUserId = req.payload.id;
+  const requestedUsername = req.params.username;
+  const limit = Math.min(parseInt(req.query.limit) || 20, 50);
+  const cursor = req.query.cursor ? parseInt(req.query.cursor) : null;
+  console.log(cursor)
+  try {
+    // 1️⃣ Use helper to get requested user
+    const requestedUser = await findUserbyuname(requestedUsername);
+    console.log("requestedUser:", requestedUser);
+
+    if (!requestedUser) return res.status(404).json({ error: 'User not found' });
+
+    // 2️⃣ Check if current user follows requested user
+    const [relRows] = await dbconnection.execute(
+      "SELECT 1 FROM rels WHERE user1=? AND user2=? AND type='follow'",
+      [currentUserId, requestedUser.id]
+    );
+    console.log("relRows:", relRows);
+
+    if (relRows.length === 0) {
+      return res.status(403).json({ error: 'You are not following this user' });
+    }
+
+    // 3️⃣ Fetch posts with pagination
+    let query = 'SELECT id, pic, caption FROM POSTS WHERE user_id=?';
+    const params = [requestedUser.id];
+    if (cursor) {
+      query += ' AND id < ?';
+      params.push(cursor);
+    }
+    query += ' ORDER BY id DESC LIMIT ?';
+    params.push(limit);
+    console.log(params)
+    const [posts] = await dbconnection.query(query,params);
+    console.log("posts fetched:", posts.length);
+
+    // 4️⃣ Generate signed URLs
+    for (let post of posts) {
+      if (post.pic) {
+        const { data, error } = await supabase.storage
+          .from('posts_bucket')
+          .createSignedUrl(post.pic, 3600);
+
+        if (!error && data?.signedUrl) post.pic = data.signedUrl;
+        else post.pic = null;
+      }
+    }
+
+    // 5️⃣ Determine next cursor
+    const nextCursor = posts.length > 0 ? posts[posts.length - 1].id : null;
+
+    return res.json({
+      user: {
+        id: requestedUser.id,
+        username: requestedUser.username,
+        bio: requestedUser.bio,
+        pfp: requestedUser.pfp
+      },
+      posts,
+      pagination: { limit, nextCursor },
+    });
+
+  } catch (err) {
+    console.error("Error in /users/:username:", err);
+    return res.status(500).json({ error: 'Database error', details: err });
+  }
 });
 router.get('/profile', isAuthenticated, async (req, res) => {
   const userId = req.payload.id;
@@ -43,7 +114,7 @@ router.get('/profile', isAuthenticated, async (req, res) => {
     if (user.pfp) {
       console.log("user has pfp")
       const { data: signedURL, error } = await supabase.storage
-        .from('pfp_bucker')      // your bucket name
+        .from('pfp_bucker')      
         .createSignedUrl(user.pfp, 3600); // URL valid for 60 seconds
 
       if (error) {
@@ -80,7 +151,7 @@ router.patch('/profile', isAuthenticated, upload.single('pfp'), async (req, res,
   if(isNaN(userId)){
     return res.status(500).json({error:"wrong user Id"});
   }
-  // allowed fields are bio and pfp and also password
+  
   console.log(req.body)
   console.log(req.file)
   if(req.file===undefined&&req.body.bio===undefined){
