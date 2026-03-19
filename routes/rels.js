@@ -1,5 +1,6 @@
 const dbconnection=require('../db.js');
 const {isAuthenticated}=require('../middleware.js');
+const {finduserbyuname}=require('../utils/user.services.js')
 var express=require('express');
 var router=express.Router();
 
@@ -98,17 +99,18 @@ router.get('/pending/received', isAuthenticated, async (req, res) => {
 router.post('/:targetId', isAuthenticated, async (req, res) => {
     const userId = req.payload.id;
     console.log(req.payload)
-    const targetId = parseInt(req.params.targetId);
+    const targetId = String.trim(req.params.targetId);
 
-    if (isNaN(targetId)||isNaN(userId)){
-        console.log("error: Invalid target user id")
-    return res.status(400).json({ error: 'Invalid target user id' });}
-    if (userId === targetId) {
+    if (isNaN(userId)){
+        console.log("error: Invalid  user id")
+    return res.status(400).json({ error: 'Invalid  user id' });}
+    const target_int_id=finduserbyuname(targetId);
+    if (userId === target_int_id) {
         console.log("u cant follow urself")
         return res.status(400).json({ error: 'You cannot follow yourself' });
     }
     try {
-        // check if a rel already exists in either direction
+        // check if a rel already exists in 
         const checkQuery = `
             SELECT * FROM rels
             WHERE user1 = ? AND user2 = ?
