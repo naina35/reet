@@ -1,6 +1,6 @@
 const dbconnection=require('../db.js');
 const {isAuthenticated}=require('../middleware.js');
-const {finduserbyuname}=require('../utils/user.services.js')
+const {findUserbyuname}=require('../services/user.services.js')
 var express=require('express');
 var router=express.Router();
 
@@ -99,29 +99,29 @@ router.get('/pending/received', isAuthenticated, async (req, res) => {
 router.post('/:targetId', isAuthenticated, async (req, res) => {
     const userId = req.payload.id;
     console.log(req.payload)
-    const targetId = String.trim(req.params.targetId);
+    const targetId = req.params.targetId.trim();
 
     if (isNaN(userId)){
         console.log("error: Invalid  user id")
     return res.status(400).json({ error: 'Invalid  user id' });}
-    const target_int_id=finduserbyuname(targetId);
+    let target_int_id=await findUserbyuname(targetId);
+    if(!target_int_id)return res.status(400).json({ error: 'Invalid  user id' });
+    target_int_id=target_int_id.id
+    console.log(target_int_id)
     if (userId === target_int_id) {
         console.log("u cant follow urself")
         return res.status(400).json({ error: 'You cannot follow yourself' });
     }
     try {
         // check if a rel already exists in 
-        const checkQuery = `
-            SELECT * FROM rels
-            WHERE user1 = ? AND user2 = ?
-        `;
-        const [existing] = await dbconnection.query(checkQuery, [userId, targetId]);
+        const checkQuery = `SELECT * FROM rels WHERE user1 = ? AND user2 = ?`;
+        const [existing] = await dbconnection.query(checkQuery, [userId, target_int_id]);
         if (existing.length > 0) {
             return res.status(400).json({ error: 'Relationship already exists' });
         }
 
         const query = 'INSERT INTO rels (user1, user2, type) VALUES (?, ?, ?)';
-        const [result] = await dbconnection.query(query, [userId, targetId, 'pending']);
+        const [result] = await dbconnection.query(query, [userId, target_int_id, 'pending']);
         return res.json({ message: 'Follow request sent', id: result.insertId });
     } catch (err) {
         console.log(err);
