@@ -15,7 +15,7 @@ const {
 }= require('../../services/auth.services.js');
 router.post('/auth/login',async (req,res,next)=>{
     const {username,password}=req.body;
-    console.log(username,password)
+    //console.log(username,password)
     if(!username || !password){
         res.status(400).json({error:"u must provide username and password"});
     }
@@ -25,7 +25,7 @@ router.post('/auth/login',async (req,res,next)=>{
             res.status(403).json({error:"u must provide correct username"});
         }
         else {
-            console.log(password,existingUser.PASSWORD)
+            //console.log(password,existingUser.PASSWORD)
             const correctPswd= await bcrypt.compare(password,existingUser.PASSWORD);
             if(!correctPswd){
                 res.status(403).json({error:"wrong password"});

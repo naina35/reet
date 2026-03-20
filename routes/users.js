@@ -23,16 +23,16 @@ router.post('/',async(req,res,next)=>{
   
 });
 router.get('/rel/:username', isAuthenticated, async (req, res) => {
-  console.log("user profile page api");
+ // console.log("user profile page api");
 
   const currentUserId = req.payload.id;
   const requestedUsername = req.params.username;
   const limit = Math.min(parseInt(req.query.limit) || 20, 50);
   const cursor = req.query.cursor ? parseInt(req.query.cursor) : null;
-  console.log(cursor)
+  //console.log(cursor)
   try {
     const requestedUser = await findUserbyuname(requestedUsername);
-    console.log("requestedUser:", requestedUser);
+    //console.log("requestedUser:", requestedUser);
 
     if (!requestedUser) return res.status(404).json({ error: 'User not found' });
 
@@ -40,7 +40,7 @@ router.get('/rel/:username', isAuthenticated, async (req, res) => {
       "SELECT 1 FROM rels WHERE user1=? AND user2=? AND type='follow'",
       [currentUserId, requestedUser.id]
     );
-    console.log("relRows:", relRows);
+    //console.log("relRows:", relRows);
 
     if (relRows.length === 0) {
       return res.status(403).json({ error: 'You are not following this user' });
@@ -54,9 +54,9 @@ router.get('/rel/:username', isAuthenticated, async (req, res) => {
     }
     query += ' ORDER BY id DESC LIMIT ?';
     params.push(limit);
-    console.log(params)
+    //console.log(params)
     const [posts] = await dbconnection.query(query,params);
-    console.log("posts fetched:", posts.length);
+    //console.log("posts fetched:", posts.length);
 
     for (let post of posts) {
       if (post.pic) {
@@ -83,7 +83,7 @@ router.get('/rel/:username', isAuthenticated, async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Error in /users/:username:", err);
+    //console.error("Error in /users/:username:", err);
     return res.status(500).json({ error: 'Database error', details: err });
   }
 });
@@ -107,20 +107,20 @@ router.get('/profile', isAuthenticated, async (req, res) => {
 
     // if user has a pfp stored, generate signed URL
     if (user.pfp) {
-      console.log("user has pfp")
+      //console.log("user has pfp")
       const { data: signedURL, error } = await supabase.storage
         .from('pfp_bucker')      
         .createSignedUrl(user.pfp, 3600); // URL valid for 60 seconds
 
       if (error) {
-        console.log('Error generating signed URL:', error);
+        //console.log('Error generating signed URL:', error);
         user.pfp = null; // fallback if error
       } else {
-        console.log(signedURL)
+       // console.log(signedURL)
         user.pfp = signedURL.signedUrl;
       }
     }
-    console.log(user)
+    //console.log(user)
     return res.json(user);
   } catch (err) {
     return res.status(500).json({ error: 'Database error', details: err });
@@ -147,8 +147,8 @@ router.patch('/profile', isAuthenticated, upload.single('pfp'), async (req, res,
     return res.status(500).json({error:"wrong user Id"});
   }
   
-  console.log(req.body)
-  console.log(req.file)
+  //console.log(req.body)
+  //console.log(req.file)
   if(req.file===undefined&&req.body.bio===undefined){
     return res.status(500).json({error:"Nothing to update"});
   }

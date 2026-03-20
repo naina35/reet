@@ -98,18 +98,19 @@ router.get('/pending/received', isAuthenticated, async (req, res) => {
 // POST /rels/:targetId       — send a follow request to targetId (creates 'pending')
 router.post('/:targetId', isAuthenticated, async (req, res) => {
     const userId = req.payload.id;
-    console.log(req.payload)
+    //console.log(req.payload)
     const targetId = req.params.targetId.trim();
 
     if (isNaN(userId)){
-        console.log("error: Invalid  user id")
-    return res.status(400).json({ error: 'Invalid  user id' });}
+        //console.log("error: Invalid  user id")
+        return res.status(400).json({ error: 'Invalid  user id' });
+    }
     let target_int_id=await findUserbyuname(targetId);
     if(!target_int_id)return res.status(400).json({ error: 'Invalid  user id' });
     target_int_id=target_int_id.id
-    console.log(target_int_id)
+    //console.log(target_int_id)
     if (userId === target_int_id) {
-        console.log("u cant follow urself")
+        //console.log("u cant follow urself")
         return res.status(400).json({ error: 'You cannot follow yourself' });
     }
     try {
@@ -124,7 +125,7 @@ router.post('/:targetId', isAuthenticated, async (req, res) => {
         const [result] = await dbconnection.query(query, [userId, target_int_id, 'pending']);
         return res.json({ message: 'Follow request sent', id: result.insertId });
     } catch (err) {
-        console.log(err);
+        //console.log(err);
         return res.status(500).json({ error: 'Database error', details: err });
     }
 });

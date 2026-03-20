@@ -11,6 +11,7 @@ var auth_register_router=require('./routes/auth/register');
 var auth_login_router=require('./routes/auth/login');
 var ref_token_router=require('./routes/auth/refreshtoken');
 var rels_router = require('./routes/rels');
+var feed_router=require('./routes/feed')
 var cors=require('cors');
 var app = express();
 app.use(cors())
@@ -33,7 +34,7 @@ app.use('/users/posts', users_postsRouter);
 app.use('/',auth_register_router);
 app.use('/',auth_login_router);
 app.use('/',ref_token_router);
-
+app.use('/',feed_router)
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
