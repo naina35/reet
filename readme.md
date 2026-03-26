@@ -206,12 +206,14 @@ npm run dev
 
 # Future Improvements
 
-* Feed API (timeline generation)
+* Notifications system  - DECIDED AGAINST IT because i am designing this app to be anti addiction, calm platform
+* Maybe chat feature? Not sure if it matches the vibe?
+* Password reset functionality
+* add email to user schema. Allow user to add email
+* Feed API (timeline generation) - DONE 
 * Pagination for posts  - DONE 
-* Input validation middleware
+* Input validation middleware - DONE IN FRONTEND
 * Image upload support - DONE
-* Notifications system
-* WebSocket based real-time updates 
 
 ---
 
